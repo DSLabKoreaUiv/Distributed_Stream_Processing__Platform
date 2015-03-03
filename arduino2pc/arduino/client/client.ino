@@ -29,6 +29,7 @@ char server[] = "192.168.1.6";    // name address for Google (using DNS)
 // Set the static IP address to use if the DHCP fails to assign
 IPAddress ip(192,168,0,177);
 char* test = "test\0";
+char buf[100]={'3','\0'};
 // Initialize the Ethernet client library
 // with the IP address and port of the server 
 // that you want to connect to (port 80 is default for HTTP):
@@ -65,10 +66,7 @@ void setup() {
     // kf you didn't get a connection to the server:
     Serial.println("connection failed");
   }
-  size = sizeof(test);
-  client.print(test);
-  client.print(test);
-  client.print("GET /search?q=arduino HTTP/1.1");
+
   //client.println("test");
   //client.write(test,size);
 }
@@ -77,29 +75,35 @@ void loop()
 {
   // if there are incoming bytes available 
   // from the server, read them and print them:
-//  if (client.available()) {
-//    char c = client.read();
-//    Serial.print(c);
-//  }else{
-//    client.println("test");
-//  }
-  
-  //delay(250);
-  
-  
-  
-  
+  if (client.available()) {
+    while(client.available()){
+      char c = client.read();
+      Serial.print(c);
+    }
+  }
+  else{
+    client.print("1.testing\r\n\0");
+    //client.print(buf);
+   // client.write(test,4);
+  }
+
+  delay(250);
+
   // if the server's disconnected, stop the client:
   if (!client.connected()) {
     Serial.println();
     Serial.println("disconnecting.");
     client.stop();
 
-    // do nothing forevermore:
-    while(true);
+    Serial.println("connecting...");
+    if (client.connect(server, 9000)) {
+      Serial.println("connected");
+
+    }  
 
   }
 
 }
+
 
 
